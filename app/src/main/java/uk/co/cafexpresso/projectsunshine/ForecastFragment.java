@@ -1,10 +1,14 @@
 package uk.co.cafexpresso.projectsunshine;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -26,6 +30,25 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+        inflater.inflate(R.menu.forecast_fragment, menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id =item.getItemId();
+        if (id==R.id.action_refresh){
+            FetchWeatherTask fetchWeather =new FetchWeatherTask();
+            fetchWeather.execute("Manchester,uk");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+        @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -47,12 +70,12 @@ public class ForecastFragment extends Fragment {
         listViewForecast.setAdapter(listAdapter);
         return rootView;
     }
-    public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
+    public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(String... params) {
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -65,7 +88,23 @@ public class ForecastFragment extends Fragment {
                 // Construct the URL for the OpenWeatherMap query
                 // Possible parameters are avaiable at OWM's forecast API page, at
                 // http://openweathermap.org/API#forecast
-                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7");
+
+
+                String baseUrl="http://api.openweathermap.org/data/2.5/forecast/daily?";
+                String q=params[0];
+                String mode="json";
+                String units="metric";
+                String cnt="7";
+                Uri urlBuilder= Uri.parse(baseUrl).buildUpon()
+                        .appendQueryParameter("q", q)
+                        .appendQueryParameter("mode", mode)
+                        .appendQueryParameter("units",units)
+                        .appendQueryParameter("cnt",cnt)
+                        .build();
+                String builtUrl=urlBuilder.toString();
+                //URL url = new URL(builtUrl);
+                URL url= new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=manchester,uk&mode=json&units=metric&cnt=7");
+                Log.v(LOG_TAG,"URL from builder= "+ builtUrl);
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
