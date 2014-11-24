@@ -28,6 +28,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="uk.co.cafexpresso.projectsunshine.MainActivity" />
         </activity>
+        <activity
+            android:name="uk.co.cafexpresso.projectsunshine.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName="uk.co.cafexpresso.projectsunshine.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uk.co.cafexpresso.projectsunshine.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
