@@ -1,5 +1,6 @@
 package uk.co.cafexpresso.projectsunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -79,6 +81,16 @@ public class ForecastFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ListView listViewForecast = (ListView) rootView.findViewById(R.id.listview_forecast);
         listViewForecast.setAdapter(listAdapter);
+        listViewForecast.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String extraIntentInfo =listAdapter.getItem(position);
+                Intent startDetailForecast = new Intent(getActivity(),DetailActivity.class);
+                startDetailForecast.putExtra("weatherInfo",extraIntentInfo);
+                startActivity(startDetailForecast);
+
+            }
+        });
         return rootView;
     }
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {

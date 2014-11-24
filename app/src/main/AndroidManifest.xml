@@ -2,18 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="uk.co.cafexpresso.projectsunshine" >
 
-    <uses-permission
-        android:name="android.permission.INTERNET">
-
-        </uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" >
+    </uses-permission>
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
         //android:theme="@style/AppTheme" >
-
         <activity
             android:name="uk.co.cafexpresso.projectsunshine.MainActivity"
             android:label="@string/app_name" >
@@ -22,6 +19,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="uk.co.cafexpresso.projectsunshine.DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:parentActivityName="uk.co.cafexpresso.projectsunshine.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="uk.co.cafexpresso.projectsunshine.MainActivity" />
         </activity>
     </application>
 
