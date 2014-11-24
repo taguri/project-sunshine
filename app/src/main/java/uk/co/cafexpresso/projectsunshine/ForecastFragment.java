@@ -25,7 +25,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by moham_000 on 24/11/2014.
@@ -49,28 +52,30 @@ public class ForecastFragment extends Fragment {
         int id =item.getItemId();
         if (id==R.id.action_refresh){
             FetchWeatherTask fetchWeather =new FetchWeatherTask();
-            fetchWeather.execute("Manchester,uk");
+            fetchWeather.execute("glasgow,uk");
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+    ArrayAdapter<String> listAdapter;
         @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         String[] fakeDataArray = {
-                "Today- Sunny as Fuck",
-                "Tomorrow- Rainy as Fuck",
-                "Monday- Windy as Fuck",
-                "Tuesday- Dry as Fuck",
-                "Wednesday- Humid as Fuck",
-                "Thursday- Boring",
-                "Jumua Mubarak. Also cloudy",
-                "Next Saturday- God knows",
-                "Stop scrolling"
+            "Today- Sunny as Fuck",
+            "Tomorrow- Rainy as Fuck",
+            "Monday- Windy as Fuck",
+            "Tuesday- Dry as Fuck",
+            "Wednesday- Humid as Fuck",
+            "Thursday- Boring",
+            "Jumua Mubarak. Also cloudy",
+            "Next Saturday- God knows",
+            "Stop scrolling"
         };
-        //List<String> fakeData= new ArrayList<String>(Arrays.asList(fakeDataArray));
-        ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, fakeDataArray);
+        List<String> fakeData= new ArrayList<String>(Arrays.asList(fakeDataArray));
+        listAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,android.R.id.text1, fakeData);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ListView listViewForecast = (ListView) rootView.findViewById(R.id.listview_forecast);
         listViewForecast.setAdapter(listAdapter);
@@ -139,7 +144,7 @@ public class ForecastFragment extends Fragment {
 
          */
 
-        protected String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
+        private String[] getWeatherDataFromJson(String forecastJsonStr, int numDays)
 
                 throws JSONException {
 
@@ -264,9 +269,9 @@ public class ForecastFragment extends Fragment {
                         .appendQueryParameter("cnt", cnt)
                         .build();
                 String builtUrl = urlBuilder.toString();
-                //URL url = new URL(builtUrl);
-                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=manchester,uk&mode=json&units=metric&cnt=7");
-                Log.v(LOG_TAG, "URL from builder= " + builtUrl);
+                URL url = new URL(builtUrl);
+                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=manchester,uk&mode=json&units=metric&cnt=7");
+
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -296,7 +301,7 @@ public class ForecastFragment extends Fragment {
                 }
                 forecastJsonStr = buffer.toString();
                 forecastArray = this.getWeatherDataFromJson(forecastJsonStr, 7);
-                Log.v(LOG_TAG, "forecast array: " + forecastArray[0]);
+
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attemping
@@ -321,6 +326,15 @@ public class ForecastFragment extends Fragment {
             return forecastArray;
         }
 
+        @Override
+        protected void onPostExecute(String[] strings) {
+            super.onPostExecute(strings);
+            listAdapter.clear();
+            int i;
+            for(i=0;i<strings.length;i++) {
+                listAdapter.add(strings[i]);
+            }
+        }
     }
 
 
