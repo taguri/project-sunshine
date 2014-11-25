@@ -30,7 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -41,12 +40,27 @@ public class ForecastFragment extends Fragment {
 
     public ForecastFragment() {
     }
-
+    private void upDateWeather(){
+        FetchWeatherTask fetchWeather =new FetchWeatherTask();
+        //calling preferences
+        SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location=prefs.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_def_value));
+        fetchWeather.execute(location);
+    }
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        upDateWeather();
+
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
         inflater.inflate(R.menu.forecast_fragment, menu);
@@ -55,10 +69,7 @@ public class ForecastFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item){
         int id =item.getItemId();
         if (id==R.id.action_refresh){
-            FetchWeatherTask fetchWeather =new FetchWeatherTask();
-            SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String location=prefs.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_def_value));
-            fetchWeather.execute(location);
+            upDateWeather();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -69,18 +80,8 @@ public class ForecastFragment extends Fragment {
         @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String[] fakeDataArray = {
-            "Today- Sunny as Fuck",
-            "Tomorrow- Rainy as Fuck",
-            "Monday- Windy as Fuck",
-            "Tuesday- Dry as Fuck",
-            "Wednesday- Humid as Fuck",
-            "Thursday- Boring",
-            "Jumua Mubarak. Also cloudy",
-            "Next Saturday- God knows",
-            "Stop scrolling"
-        };
-        List<String> fakeData= new ArrayList<String>(Arrays.asList(fakeDataArray));
+
+        List<String> fakeData= new ArrayList<String>();
         listAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1,android.R.id.text1, fakeData);
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         ListView listViewForecast = (ListView) rootView.findViewById(R.id.listview_forecast);
@@ -236,11 +237,16 @@ public class ForecastFragment extends Fragment {
 
                 JSONObject temperatureObject = dayForecast.getJSONObject(OWM_TEMPERATURE);
 
+                SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String units=prefs.getString(getString(R.string.pref_units_key),getString(R.string.pref_units_def_values));
                 double high = temperatureObject.getDouble(OWM_MAX);
 
                 double low = temperatureObject.getDouble(OWM_MIN);
-
-
+                Log.e(LOG_TAG,"Units: "+units);
+                if (units.contains("Imperial")){
+                    high=high*1.8+32;
+                    low=low*1.8+32;
+                }
 
                 highAndLow = formatHighLows(high, low);
 
