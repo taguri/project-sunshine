@@ -1,8 +1,12 @@
 package uk.co.cafexpresso.projectsunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -39,6 +43,21 @@ public class MainActivity extends ActionBarActivity {
             Intent openSettings=new Intent(this,SettingsActivity.class);
             startActivity(openSettings);
             return true;
+        }
+        if (id==R.id.action_view_location){
+            SharedPreferences prefs= PreferenceManager.getDefaultSharedPreferences(getApplication());
+            String location = prefs.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_def_value));
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            //"geo:0,0?q=1600+Amphitheatre+Parkway%2C+CA"
+            location.replaceAll(" ","+")
+                    .replaceAll(",", "%2C");
+            Uri location_query= Uri.parse("geo:0,0").buildUpon().appendQueryParameter("q",location).build();
+            intent.setData(location_query);
+            Log.d("Location intent in the MainActivity: ","Query: "+location_query);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+
+                startActivity(intent);
+            }
         }
 
         return super.onOptionsItemSelected(item);

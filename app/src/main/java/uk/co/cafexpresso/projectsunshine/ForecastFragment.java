@@ -91,7 +91,7 @@ public class ForecastFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String extraIntentInfo =listAdapter.getItem(position);
                 Intent startDetailForecast = new Intent(getActivity(),DetailActivity.class);
-                startDetailForecast.putExtra("weatherInfo",extraIntentInfo);
+                startDetailForecast.putExtra(Intent.EXTRA_TEXT,extraIntentInfo);
                 startActivity(startDetailForecast);
 
             }
@@ -242,7 +242,6 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
 
                 double low = temperatureObject.getDouble(OWM_MIN);
-                Log.e(LOG_TAG,"Units: "+units);
                 if (units.contains("Imperial")){
                     high=high*1.8+32;
                     low=low*1.8+32;
